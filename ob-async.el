@@ -57,7 +57,7 @@ Add additional variables like \"\\(\\borg-babel.+\\|sql-connection-alist\\)\".")
 (defalias 'org-babel-execute-src-block:async 'ob-async-org-babel-execute-src-block)
 
 ;;;###autoload
-(defun ob-async-org-babel-execute-src-block (&optional orig-fun arg info params)
+(defun ob-async-org-babel-execute-src-block (&optional orig-fun arg info params executor-type)
   "Like org-babel-execute-src-block, but run asynchronously.
 
 Original docstring for org-babel-execute-src-block:
@@ -84,12 +84,12 @@ block."
     nil)
    ;; If there is no :async parameter, call the original function
    ((not (assoc :async (nth 2 (or info (org-babel-get-src-block-info)))))
-    (funcall orig-fun arg info params))
+    (funcall orig-fun arg info params executor-type))
    ;; If the src block language is in the list of languages async is not to be
    ;; used for, call the original function
    ((member (nth 0 (or info (org-babel-get-src-block-info)))
             ob-async-no-async-languages-alist)
-    (funcall orig-fun arg info params))
+    (funcall orig-fun arg info params executor-type))
    ;; Otherwise, perform asynchronous execution
    (t
     (let ((placeholder (ob-async--generate-uuid)))
